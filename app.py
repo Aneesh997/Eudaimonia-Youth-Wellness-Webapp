@@ -16,7 +16,6 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 gemini_model = genai.GenerativeModel('gemini-1.5-flash')
 
-
 try:
     model = load_model('youth_wellness_model.keras')
     print("Model loaded successfully")
@@ -24,17 +23,14 @@ except Exception as e:
     print(f"Error loading model: {e}")
     model = None
 
-
 ordinal_map = {'Never': 0, 'Rarely': 1, 'Sometimes': 2, 'Often': 3, 'Always': 4}
 sleep_nights_map = {'0-1 night': 0.5, '2-3 nights': 2.5, '4 nights': 4, '5-7 nights': 6}
-
 
 feature_columns = [
     'Gender_Male', 'Gender_Others', 'Student_Status_Postgraduate',
     'Nervous_Stressed', 'Skip_Meals', 'Problem_Sleep_Nights_Numeric',
     'Age', 'Sleep_Quality', 'Student_Status_Undergraduate', 'Gender_Female'
 ]
-
 
 # Initialize and fit the scaler once at application startup
 scaler = MinMaxScaler()
@@ -54,43 +50,34 @@ def preprocess_user_data(user_data):
     try:
         input_df = pd.DataFrame([user_data])
 
-        
         for col in ['Nervous_Stressed', 'Skip_Meals']:
             if col in input_df.columns:
                 input_df[col] = input_df[col].map(ordinal_map).fillna(2)
 
-        
         if 'Problem_Sleep_Nights' in input_df.columns:
             input_df['Problem_Sleep_Nights_Numeric'] = input_df['Problem_Sleep_Nights'].map(sleep_nights_map).fillna(4)
 
-        
         if 'Age' in input_df.columns:
             input_df['Age'] = pd.to_numeric(input_df['Age'], errors='coerce').fillna(25)
 
-        
         if 'Sleep_Quality' in input_df.columns:
             input_df['Sleep_Quality'] = input_df['Sleep_Quality'].map(ordinal_map).fillna(2)
 
-        
         if 'Gender' in input_df.columns:
             input_df['Gender_Male'] = (input_df['Gender'] == 'Male').astype(int)
             input_df['Gender_Female'] = (input_df['Gender'] == 'Female').astype(int)
             input_df['Gender_Others'] = (input_df['Gender'] == 'Others').astype(int)
 
-        
         if 'Student_Status' in input_df.columns:
             input_df['Student_Status_Postgraduate'] = (input_df['Student_Status'] == 'Postgraduate').astype(int)
             input_df['Student_Status_Undergraduate'] = (input_df['Student_Status'] == 'Undergraduate').astype(int)
 
-        
         for col in feature_columns:
             if col not in input_df.columns:
                 input_df[col] = 0
 
-        
         input_df = input_df[feature_columns]
 
-        
         numerical_features = ['Nervous_Stressed', 'Skip_Meals', 'Problem_Sleep_Nights_Numeric', 'Age', 'Sleep_Quality']
         input_df[numerical_features] = scaler.transform(input_df[numerical_features])
 
@@ -107,16 +94,12 @@ def predict_stress_level(user_data):
         if processed_data is None:
             return None
         prediction = model.predict(processed_data, verbose=0)
-        
         return max(0, min(5, prediction[0][0]))
     except Exception as e:
         print(f"Error in prediction: {e}")
         return None
 
 def interpret_stress_score(score):
-    """
-    Interpret the stress score according to the 0-5 Sleep Quality & Stress Cycle Scale
-    """
     if score >= 4.5:
         return "excellent", "very good sleep, low stress, healthy eating patterns"
     elif score >= 3.5:
@@ -129,24 +112,11 @@ def interpret_stress_score(score):
         return "very poor", "high stress, severe sleep and eating disruption; urgent intervention needed"
 
 def format_gemini_response(response_text):
-    """
-    Format the Gemini response for better readability in HTML
-    """
-   
     response_text = re.sub(r'^Response:\s*', '', response_text)
-    
-    
     response_text = re.sub(r'(\d+\.)\s+(.*?)(?=\d+\.|$)', r'<br><strong>\1</strong> \2<br>', response_text)
-    
-    
     response_text = re.sub(r'\*\s+(.*?)(?=\*|$)', r'<br>• \1<br>', response_text)
-    
-    
     response_text = re.sub(r'\n\n+', '<br><br>', response_text)
-    
-    
     response_text = response_text.replace('\n', '<br>')
-    
     return response_text
 
 def get_gemini_analysis(user_data, stress_score, stress_level):
@@ -160,12 +130,6 @@ def get_gemini_analysis(user_data, stress_score, stress_level):
         3.0 → Acceptable ✅ (moderate stress, average sleep, mild eating changes; needs lifestyle adjustments)  
         2.0 → Poor ⚠ (stress disrupting eating and sleep, reduced concentration, fatigue, early burnout risk)  
         1.0 → Very Poor 🚨 (high stress, severe sleep and eating disruption; urgent intervention needed)
-
-        This scale represents the cyclic relationship between:
-        - Academic Stress
-        - Changes in Eating Patterns
-        - Lack of Sleep
-        which reinforce each other into a Cycle of Stress & Anxiety.
 
         The user's score is: {stress_score:.2f} ({stress_level})
 
@@ -215,7 +179,7 @@ def get_gemini_chat_response(user_message, stress_context=None):
             
             Format your response with clear paragraphs and proper spacing for readability.
             Assistant:"""
-        
+
         response = gemini_model.generate_content(prompt)
         return format_gemini_response(response.text)
     except Exception as e:
@@ -271,10 +235,9 @@ def chatbot_response():
     user_message = data.get('message', '')
     stress_results = session.get('stress_results', None)
 
-    # Get response from Gemini
     gemini_response = get_gemini_chat_response(user_message, stress_results)
     
-极    return jsonify({'response': gemini_response})
+    return jsonify({'response': gemini_response})
 
 # Error handlers
 @app.errorhandler(404)
