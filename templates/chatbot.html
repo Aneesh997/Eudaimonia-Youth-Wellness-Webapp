@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>Eudaimonia - Chatbot</title>
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+
+  <!-- Favicons -->
+  <link href="{{ url_for('static', filename='img/logos.png') }}" rel="icon" />
+  <link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com" rel="preconnect" />
+  <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet" />
+
+  <!-- Vendor CSS Files -->
+  <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/aos/aos.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet" />
+  <link href="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+  <style>
+    .footer-image-container {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      padding: 0px;
+      background-color: #ffffff;
+    }
+
+    .footer-image-container img {
+      height: 50px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #f8f9fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+    }
+
+    .main {
+      padding-top: 100px;
+      padding-bottom: 50px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Chat Container Styles */
+    .chat-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 500px;
+      margin-bottom: 30px;
+    }
+
+    .chat-header {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* New style for Mindy text */
+    .chat-header h2 {
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.8),
+        0 0 20px rgba(255, 255, 255, 0.5),
+        0 0 30px rgba(255, 255, 255, 0.3);
+      font-weight: 700;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .message {
+      max-width: 80%;
+      padding: 12px 16px;
+      border-radius: 18px;
+      line-height: 1.4;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .bot-message {
+      background: #e3f2fd;
+      border-bottom-left-radius: 5px;
+      align-self: flex-start;
+    }
+
+    .user-message {
+      background: #2196f3;
+      color: white;
+      border-bottom-right-radius: 5px;
+      align-self: flex-end;
+    }
+
+    .chat-input {
+      display: flex;
+      padding: 5px;
+      background: #f5f5f5;
+      border-top: 1px solid #ddd;
+    }
+
+    .chat-input input {
+      flex: 1;
+      padding: 12px 15px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .chat-input button {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .chat-input button:hover {
+      opacity: 0.9;
+      transform: scale(1.05);
+    }
+
+    /* Resources Section */
+    .resources {
+      margin-top: 40px;
+    }
+
+    .resources h2 {
+      color: #1565c0;
+      margin-bottom: 25px;
+      text-align: center;
+      font-size: 28px;
+    }
+
+    .resource-cards {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .resource-card {
+      background: #e3f2fd;
+      border-radius: 12px;
+      padding: 25px;
+      transition: transform 0.3s;
+      border: 1px solid #bbdefb;
+      width: calc(33.333% - 20px);
+      text-align: center;
+      flex: 1;
+      min-width: 250px;
+    }
+
+    .resource-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .resource-card h3 {
+      color: #1565c0;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .resource-card p {
+      color: #546e7a;
+      margin-bottom: 20px;
+    }
+
+    .resource-card a {
+      color: #2196f3;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.3s;
+    }
+
+    .resource-card a:hover {
+      color: #0d47a1;
+      text-decoration: underline;
+    }
+
+    /* Typing Indicator */
+    .typing-indicator {
+      display: none;
+      background: #e3f2fd;
+      padding: 12px 16px;
+      border-radius: 18px;
+      border-bottom-left-radius: 5px;
+      align-self: flex-start;
+      margin-bottom: 15px;
+    }
+
+    .typing-indicator span {
+      height: 8px;
+      width: 8px;
+      background: #1565c0;
+      display: inline-block;
+      border-radius: 50%;
+      margin-right: 5px;
+      animation: typing 1.3s infinite;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+
+      0%,
+      100% {
+        opacity: 0.4;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
+    /* Stress Results */
+    .stress-results {
+      background: #e8f5e9;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 1px solid #c8e6c9;
+    }
+
+    .stress-results h4 {
+      color: #2e7d32;
+      margin-bottom: 10px;
+    }
+
+    .formatted-response {
+      line-height: 1.6;
+    }
+
+    .formatted-response strong {
+      color: #1565c0;
+    }
+
+    .formatted-response br {
+      margin-bottom: 8px;
+      display: block;
+      content: "";
+    }
+
+    /* Score Indicators */
+    .score-indicator {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      margin: 0 5px;
+    }
+
+    .score-excellent {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    .score-good {
+      background-color: #8bc34a;
+      color: white;
+    }
+
+    .score-acceptable {
+      background-color: #ffc107;
+      color: black;
+    }
+
+    .score-poor {
+      background-color: #ff9800;
+      color: white;
+    }
+
+    .score-very-poor {
+      background-color: #f44336;
+      color: white;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .main {
+        padding-top: 80px;
+        padding-bottom: 30px;
+      }
+
+      .chat-container {
+        height: 400px;
+        margin-bottom: 20px;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+
+      .resource-cards {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .resource-card {
+        width: 100%;
+        max-width: 320px;
+      }
+
+      .resources h2 {
+        font-size: 24px;
+      }
+
+      .container {
+        padding: 0 15px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .chat-header {
+        padding: 12px 15px;
+      }
+
+      .chat-messages {
+        padding: 15px;
+      }
+
+      .resource-card {
+        padding: 20px;
+      }
+
+      .resources h2 {
+        font-size: 22px;
+      }
+    }
+
+    /* Header and Footer Fixes */
+    .header {
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer {
+      background: #f8f9fa;
+      border-top: 1px solid #e9ecef;
+      margin-top: 50px;
+    }
+  </style>
+  <!-- Main CSS File -->
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+</head>
+
+<body class="index-page">
+  </head>
+
+  <body class="index-page">
+    <header id="header" class="header d-flex align-items-center fixed-top">
+      <div
+        class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+        <a href="{{ url_for('home') }}" class="logo d-flex align-items-center me-auto me-xl-0">
+          <h1 class="sitename">Eudaimonia</h1>
+        </a>
+
+        <nav id="navmenu" class="navmenu">
+          <ul>
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('mental') }}" class="active">Take Quiz!</a></li>
+            <li><a href="{{ url_for('chatbot') }}">Mindy-Our Chatbot</a></li>
+          </ul>
+          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+        </nav>
+      </div>
+    </header>
+    <br>
+    <br>
+
+    <main class="main">
+      <div class="container">
+        <div class="chat-container">
+          <div class="chat-header">
+            <i class="fas fa-robot fa-2x"></i>
+            <div>
+              <h2>Mindy</h2>
+              <p>Online - Ready to help</p>
+            </div>
+          </div>
+          <div class="chat-messages" id="chatMessages">
+            <div class="message bot-message">
+              Hi there! I'm Mindy, your mental health support assistant. How are you feeling today?
+            </div>
+            {% if stress_results %}
+            <div class="stress-results">
+              <h4><i class="fas fa-chart-line"></i> Your Stress Cycle Assessment Results</h4>
+              <p>Based on your test, your stress score is
+                <span class="score-indicator score-{{ stress_results.level.replace(' ', '-') }}">
+                  {{ stress_results.score }}
+                </span>
+                which indicates
+                <strong>{{ stress_results.level }}</strong> levels in the stress-eating-sleep cycle.
+              </p>
+            </div>
+            <div class="message bot-message formatted-response">
+              {{ stress_results.gemini_analysis|safe }}
+            </div>
+            {% endif %}
+            <div class="typing-indicator" id="typingIndicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+          <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Type your message here...">
+            <button id="sendButton">
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="resources">
+          <h2><i class="fas fa-book-open"></i> Mental Health Resources</h2>
+          <div class="resource-cards">
+            <div class="resource-card">
+              <h3>Coping with Anxiety</h3>
+              <p>Learn techniques to manage anxiety and stress in your daily life.</p>
+              <a href="https://adaa.org/tips" target="_blank">Read more <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="resource-card">
+              <h3>Mindfulness Exercises</h3>
+              <p>Practice mindfulness with guided exercises and meditation.</p>
+              <a href="https://www.freemindfulness.org/download" target="_blank">Try now <i
+                  class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="resource-card">
+              <h3>Professional Help</h3>
+              <p>Find licensed therapists and mental health professionals near you.</p>
+              <a href="https://therasoft.in/find-a-therapist-directory/" target="_blank">Find help <i
+                  class="fas fa-arrow-right"></i></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="container footer-top">
+        <div class="row gy-4">
+          <div class="col-lg-4 col-md-6 footer-about">
+            <a href="{{ url_for('home') }}" class="logo d-flex align-items-center">
+              <span class="sitename">Eudaimonia</span>
+            </a>
+          </div>
+
+          <div class="col-lg-2 col-md-3 footer-links">
+            <h4>Useful Links</h4>
+            <ul>
+              <li><a href="{{ url_for('home') }}">Home</a></li>
+              <li><a href="{{ url_for('mental') }}">Quiz</a></li>
+              <li><a href="{{ url_for('chatbot') }}">Chatbot</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-image-container">
+        <img src="{{ url_for('static', filename='img/rvu-logo.png') }}" alt="Footer Image" />
+      </div>
+      <div class="container copyright text-center mt-4">
+        <p>
+          © <span>Copyright 2025</span>
+          <strong class="px-1 sitename">Eudaimonia</strong>
+          <span>All Rights Reserved</span>
+        </p>
+      </div>
+    </footer>
+
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+        class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/aos/aos.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/glightbox/js/glightbox.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/purecounter/purecounter_vanilla.js') }}"></script>
+
+    <!-- profile card -->
+    <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+
+    <!-- Main JS File -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        // Focus input field on load
+        userInput.focus();
+
+        // Function to add a message to the chat
+        function addMessage(message, isUser = false) {
+          const messageDiv = document.createElement('div');
+          messageDiv.classList.add('message');
+          messageDiv.classList.add(isUser ? 'user-message' : 'bot-message');
+
+          // Check if it's a bot message with HTML formatting
+          if (!isUser && message.includes('<')) {
+            messageDiv.classList.add('formatted-response');
+            messageDiv.innerHTML = message;
+          } else {
+            messageDiv.textContent = message;
+          }
+
+          chatMessages.appendChild(messageDiv);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Function to show typing indicator
+        function showTypingIndicator() {
+          typingIndicator.style.display = 'block';
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Function to hide typing indicator
+        function hideTypingIndicator() {
+          typingIndicator.style.display = 'none';
+        }
+
+        // Function to handle user message
+        function handleUserMessage() {
+          const message = userInput.value.trim();
+
+          if (message !== '') {
+            // Add user message to chat
+            addMessage(message, true);
+
+            // Clear input
+            userInput.value = '';
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            // Send message to server
+            fetch('/api/chatbot', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ message: message })
+            })
+              .then(response => response.json())
+              .then(data => {
+                hideTypingIndicator();
+                addMessage(data.response);
+              })
+              .catch(error => {
+                hideTypingIndicator();
+                addMessage("I'm sorry, I'm having trouble responding right now. Please try again.");
+                console.error('Error:', error);
+              });
+          }
+        }
+
+        // Event listeners
+        sendButton.addEventListener('click', handleUserMessage);
+        userInput.addEventListener('keypress', function (e) {
+          if (e.key === 'Enter') {
+            handleUserMessage();
+          }
+        });
+
+        // Add welcome message if no stress results
+        {% if not stress_results %}
+        setTimeout(() => {
+          addMessage("Welcome! I'm here to provide support and resources for your mental wellbeing. You can ask me about stress, anxiety, depression, sleep issues, or just share how you're feeling.");
+        }, 1000);
+        {% endif %}
+      });
+    </script>
+  </body>
+
+</html>

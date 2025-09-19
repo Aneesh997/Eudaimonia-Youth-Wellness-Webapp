@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Eudaimonia - Quiz</title>
+    <meta name="description" content="" />
+    <meta name="keywords" content="" />
+
+    <!-- Favicons -->
+    <link href="{{ url_for('static', filename='img/logos.png') }}" rel="icon" />
+    <link href="{{ url_for('static', filename='img/apple-touch-icon.png') }}" rel="apple-touch-icon" />
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Nunito:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet" />
+
+    <!-- Vendor CSS Files -->
+    <link href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/aos/aos.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/glightbox/css/glightbox.min.css') }}" rel="stylesheet" />
+    <link href="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.css') }}" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+
+    <style>
+        .footer-image-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 0px;
+            background-color: #ffffff;
+        }
+
+        .footer-image-container img {
+            height: 50px;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .light-background {
+            background-color: #f0f5ff;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: none;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 12px 12px 0 0 !important;
+            padding: 15px;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-finish {
+            background: linear-gradient(135deg, #00b09b 0%, #96c93d 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-back {
+            background-color: #6c757d;
+            color: white;
+            border: none;
+        }
+
+        .btn-next:hover,
+        .btn-finish:hover,
+        .btn-back:hover {
+            opacity: 0.9;
+            color: white;
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+
+        .form-check-input:checked {
+            background-color: #6a11cb;
+            border-color: #6a11cb;
+        }
+
+        .option-label {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-label:hover {
+            background-color: #f0f5ff;
+        }
+
+        .option-label.selected {
+            background-color: #e6eeff;
+            border-left: 4px solid #6a11cb;
+        }
+
+        .question-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            text-align: center;
+            background-color: #6a11cb;
+            color: white;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        .question-navigation {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .question-nav-item {
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #f0f5ff;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .question-nav-item.answered {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .question-nav-item.current {
+            background-color: #6a11cb;
+            color: white;
+        }
+
+        .redirect-message {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .redirect-message i {
+            font-size: 3rem;
+            color: #6a11cb;
+            margin-bottom: 20px;
+        }
+
+        .redirect-message h4 {
+            margin-bottom: 15px;
+            color: #2e7d32;
+        }
+
+        .redirect-message p {
+            color: #6c757d;
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #6a11cb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* New style for gradient white text */
+        .gradient-white-text {
+            background: linear-gradient(to right, #ffffff, #e6e6e6, #f8f8f8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+            text-shadow: 0px 2px 3px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    <!-- Main CSS File -->
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+</head>
+
+<body class="index-page">
+    <header id="header" class="header d-flex align-items-center fixed-top">
+        <div
+            class="header-container container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
+            <a href="{{ url_for('home') }}" class="logo d-flex align-items-center me-auto me-xl-0">
+                <h1 class="sitename">Eudaimonia</h1>
+            </a>
+
+            <nav id="navmenu" class="navmenu">
+                <ul>
+                    <li><a href="{{ url_for('home') }}">Home</a></li>
+                    <li><a href="{{ url_for('mental') }}" class="active">Take Quiz!</a></li>
+                    <li><a href="{{ url_for('chatbot') }}">Mindy-Our Chatbot</a></li>
+                </ul>
+                <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main">
+        <!-- Mental Test Title -->
+        <div class="page-title light-background">
+            <div class="container py-5">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8 col-md-10 col-sm-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header text-center">
+                                <!-- Updated heading with gradient white text -->
+                                <h4 class="mb-0 gradient-white-text">Quick Quiz!</h4>
+                                <small id="question-progress">Test 1 out of 15</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between">
+                                        <span>Test Progress:</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px;">
+                                        <div class="progress-bar bg-success" role="progressbar" id="progress-bar"
+                                            style="width: 6.67%"></div>
+                                    </div>
+                                </div>
+                                <div id="question-container">
+                                    <!-- Questions will be loaded here by JavaScript -->
+                                </div>
+                                <div class="question-navigation" id="question-navigation">
+                                    <!-- Question navigation will be generated here -->
+                                </div>
+                                <div class="button-container d-flex justify-content-between mt-4">
+                                    <button class="btn btn-back d-none" id="back-button">
+                                        &larr; Back
+                                    </button>
+                                    <button class="btn btn-next" id="next-button">
+                                        Next &rarr;
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card shadow-sm mt-4 text-center d-none" id="result-container">
+                            <div class="card-body redirect-message">
+                                <i class="fas fa-comments fa-3x"></i>
+                                <h4>🎉 Test Completed!</h4>
+                                <p>Redirecting you to our chatbot for personalized analysis...</p>
+                                <div class="spinner"></div>
+                                <p>Please wait while we process your results.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Mental Test Title -->
+
+        <!-- pop up -->
+        <div id="popup" class="popup"></div>
+    </main>
+
+    <footer id="footer" class="footer">
+        <div class="container footer-top">
+            <div class="row gy-4">
+                <div class="col-lg-4 col-md-6 footer-about">
+                    <a href="{{ url_for('home') }}" class="logo d-flex align-items-center">
+                        <span class="sitename">Eudaimonia</span>
+                    </a>
+                </div>
+
+                <div class="col-lg-2 col-md-3 footer-links">
+                    <h4>Useful Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('mental') }}">Quiz</a></li>
+                        <li><a href="{{ url_for('chatbot') }}">Chatbot</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer-image-container">
+            <img src="{{ url_for('static', filename='img/rvu-logo.png') }}" alt="Footer Image" />
+        </div>
+        <div class="container copyright text-center mt-4">
+            <p>
+                © <span>Copyright 2025</span>
+                <strong class="px-1 sitename">Eudaimonia</strong>
+                <span>All Rights Reserved</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scroll Top -->
+    <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i
+            class="bi bi-arrow-up-short"></i></a>
+
+    <!-- Vendor JS Files -->
+    <script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/php-email-form/validate.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/aos/aos.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/glightbox/js/glightbox.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/swiper/swiper-bundle.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/purecounter/purecounter_vanilla.js') }}"></script>
+
+    <!-- Main JS File -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+        // Quiz data and functionality
+        const questions = [
+            {
+                question: "What is your gender?",
+                options: ["Male", "Female", "Others", "Prefer not to say"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "Current academic level?",
+                options: ["Undergraduate", "Postgraduate"],
+                points: [0, 1]
+            },
+            {
+                question: "Current Living Situation",
+                options: ["At home with family", "Hostel", "PG / Rented Accommodation"],
+                points: [0, 1, 2]
+            },
+            {
+                question: "Have you previously sought a professional consultation for your mental health?",
+                options: ["Yes", "No"],
+                points: [0, 1]
+            },
+            {
+                question: "In the last month, how often have you been upset because of something that happened unexpectedly?",
+                options: ["Never", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "In the last month, how often have you felt that you were unable to control the important things in your life?",
+                options: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3, 4]
+            },
+            {
+                question: "In the last month, how often have you felt nervous and stressed?",
+                options: ["Never", "Rarely", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "In the last month, how often have you felt confident about your ability to handle your personal problems?",
+                options: ["Never", "Rarely", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "In the last month, how often have you felt that things were going your way?",
+                options: ["Sometimes", "Often", "Always"],
+                points: [0, 1, 2]
+            },
+            {
+                question: "In the last month, how often have you found that you could not cope with all the things that you had to do?",
+                options: ["Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "In the last month, how often have you been able to control irritations in your life?",
+                options: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3, 4]
+            },
+            {
+                question: "In the last month, how often have you felt that you were on top of things?",
+                options: ["Never", "Rarely", "Sometimes", "Often"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "In the last month, how often have you been angered because of things that happened that were outside of your control?",
+                options: ["Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "In the last month, how often have you felt difficulties were piling up so high that you could not overcome them?",
+                options: ["Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "How often do you skip meals when feeling stressed or anxious?",
+                options: ["Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "How often do your eating patterns change based on your emotional state?",
+                options: ["Never", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "To what extent do you feel that irregular eating habits affect your energy levels and academic performance?",
+                options: ["Completely Agree", "Agree", "Somewhat Agree", "Disagree", "Completely Disagree"],
+                points: [0, 1, 2, 3, 4]
+            },
+            {
+                question: "Have deliberately reduced meals/cut down eating?",
+                options: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3, 4]
+            },
+            {
+                question: "Do you eat more than usual when experiencing pressures/stress?",
+                options: ["Yes", "No"],
+                points: [0, 1]
+            },
+            {
+                question: "In last 1 month how often have you experienced any difficulty in sleeping?",
+                options: ["Never", "Rarely", "Sometimes", "Often", "Always"],
+                points: [0, 1, 2, 3, 4]
+            },
+            {
+                question: "To what extent do you consider your sleep problem to interfere with your daily functioning (e.g., daytime fatigue, ability to function at work, daily chores, concentration, memory, mood, etc.)",
+                options: ["Never", "Rarely", "Sometimes", "Always"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "Sleep Condition Indicator (SCI) - Typically, how long does it take you to fall asleep?",
+                options: ["0-15 minutes", "16-30 minutes", "46-60 minutes", "More than 60 minutes"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "Sleep Condition Indicator (SCI) - If you wake up at night, how long are you awake in total?",
+                options: ["0-15 minutes", "16-30 minutes", "46-60 minutes", "More than 60 minutes"],
+                points: [0, 1, 2, 3]
+            },
+            {
+                question: "How many nights a week do you have a problem with your sleep?",
+                options: ["0-1 night", "4 nights", "5-7 nights"],
+                points: [0, 1, 2]
+            },
+            {
+                question: "Overall, how would you rate your sleep quality over the last month?",
+                options: ["Very Good", "Poor", "Very Poor"],
+                points: [0, 1, 2]
+            }
+        ];
+
+        let currentQuestion = 0;
+        const userAnswers = Array(questions.length).fill(null);
+
+        const questionContainer = document.getElementById("question-container");
+        const nextButton = document.getElementById("next-button");
+        const backButton = document.getElementById("back-button");
+        const progressBar = document.getElementById("progress-bar");
+        const questionProgress = document.getElementById("question-progress");
+        const resultContainer = document.getElementById("result-container");
+        const questionNavigation = document.getElementById("question-navigation");
+
+        // Initialize the quiz
+        function initQuiz() {
+            loadQuestion(currentQuestion);
+            updateProgress();
+            createQuestionNavigation();
+
+            // Add event listeners
+            nextButton.addEventListener("click", handleNext);
+            backButton.addEventListener("click", handleBack);
+        }
+
+        function createQuestionNavigation() {
+            questionNavigation.innerHTML = '';
+            questions.forEach((_, index) => {
+                const navItem = document.createElement('div');
+                navItem.className = 'question-nav-item';
+                navItem.textContent = index + 1;
+                navItem.addEventListener('click', () => {
+                    navigateToQuestion(index);
+                });
+                questionNavigation.appendChild(navItem);
+            });
+            updateQuestionNavigation();
+        }
+
+        function updateQuestionNavigation() {
+            const navItems = questionNavigation.querySelectorAll('.question-nav-item');
+            navItems.forEach((item, index) => {
+                item.classList.remove('current', 'answered');
+                if (index === currentQuestion) {
+                    item.classList.add('current');
+                }
+                if (userAnswers[index] !== null) {
+                    item.classList.add('answered');
+                }
+            });
+        }
+
+        function navigateToQuestion(index) {
+            // Save current answer before navigating
+            const selectedOption = document.querySelector("input[name='question']:checked");
+            if (selectedOption) {
+                userAnswers[currentQuestion] = parseInt(selectedOption.value);
+            }
+
+            currentQuestion = index;
+            loadQuestion(currentQuestion);
+            updateProgress();
+            updateQuestionNavigation();
+
+            // Save answers to localStorage
+            saveAnswers();
+        }
+
+        function loadQuestion(index) {
+            const question = questions[index];
+            questionContainer.innerHTML = `
+                <h5 class="mb-3"><span class="question-number">${index + 1}</span>${question.question}</h5>
+                ${question.options.map((option, i) => `
+                    <label class="option-label d-block ${userAnswers[index] === question.points[i] ? 'selected' : ''}">
+                        <input type="radio" name="question" value="${question.points[i]}" 
+                            ${userAnswers[index] === question.points[i] ? 'checked' : ''} 
+                            style="display: none;">
+                        ${option}
+                    </label>
+                `).join("")}
+            `;
+
+            // Add event listeners to option labels
+            const optionLabels = questionContainer.querySelectorAll('.option-label');
+            optionLabels.forEach(label => {
+                label.addEventListener('click', () => {
+                    // Remove selected class from all options
+                    optionLabels.forEach(l => l.classList.remove('selected'));
+                    // Add selected class to clicked option
+                    label.classList.add('selected');
+
+                    // Check the radio input
+                    const radioInput = label.querySelector('input[type="radio"]');
+                    radioInput.checked = true;
+
+                    // Save the answer
+                    userAnswers[currentQuestion] = parseInt(radioInput.value);
+                    updateQuestionNavigation();
+                    saveAnswers();
+                });
+            });
+
+            // Show/hide back button based on current question
+            backButton.classList.toggle("d-none", index === 0);
+
+            // Update next button text and style for last question
+            if (index === questions.length - 1) {
+                nextButton.textContent = "Finish";
+                nextButton.classList.replace("btn-next", "btn-finish");
+            } else {
+                nextButton.textContent = "Next →";
+                if (nextButton.classList.contains("btn-finish")) {
+                    nextButton.classList.replace("btn-finish", "btn-next");
+                }
+            }
+        }
+
+        function updateProgress() {
+            const progressPercentage = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+            questionProgress.textContent = `Test ${currentQuestion + 1} out of ${questions.length}`;
+        }
+
+        function handleNext() {
+            const selectedOption = document.querySelector("input[name='question']:checked");
+
+            if (!selectedOption) {
+                alert("Please select an answer before proceeding.");
+                return;
+            }
+
+            userAnswers[currentQuestion] = parseInt(selectedOption.value);
+            saveAnswers();
+            updateQuestionNavigation();
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion(currentQuestion);
+                updateProgress();
+                updateQuestionNavigation();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function handleBack() {
+            const selectedOption = document.querySelector("input[name='question']:checked");
+            if (selectedOption) {
+                userAnswers[currentQuestion] = parseInt(selectedOption.value);
+                saveAnswers();
+            }
+
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion(currentQuestion);
+                updateProgress();
+                updateQuestionNavigation();
+            }
+        }
+
+        function finishQuiz() {
+            // Show result container, hide question container
+            questionContainer.parentElement.parentElement.classList.add("d-none");
+            resultContainer.classList.remove("d-none");
+
+            // Prepare data for the model
+            const testData = {
+                'Gender': userAnswers[0] === 0 ? 'Male' : (userAnswers[0] === 1 ? 'Female' : 'Others'),
+                'Student_Status': userAnswers[1] === 0 ? 'Undergraduate' : 'Postgraduate',
+                'Nervous_Stressed': userAnswers[6] >= 0 ? ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'][userAnswers[6]] : 'Sometimes',
+                'Skip_Meals': userAnswers[14] >= 0 ? ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'][userAnswers[14]] : 'Sometimes',
+                'Problem_Sleep_Nights': userAnswers[24] === 0 ? '0-1 night' : (userAnswers[24] === 1 ? '4 nights' : '5-7 nights'),
+                'Age': 25,
+                'Sleep_Quality': userAnswers[25] === 0 ? 'Very Good' : (userAnswers[25] === 1 ? 'Poor' : 'Very Poor')
+            };
+
+            // Send data to server for prediction
+            fetch('/api/save-mental-result', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(testData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.redirect) {
+                        // Redirect to chatbot page after a short delay to show the message
+                        setTimeout(() => {
+                            window.location.href = data.redirect;
+                        }, 2000);
+                    } else {
+                        console.error('Error:', data.message);
+                        alert('There was an error processing your results. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('There was an error processing your results. Please try again.');
+                });
+
+            // Clear saved answers
+            localStorage.removeItem('mentalHealthTestAnswers');
+        }
+
+        function saveAnswers() {
+            localStorage.setItem('mentalHealthTestAnswers', JSON.stringify(userAnswers));
+        }
+
+        function loadSavedAnswers() {
+            const savedAnswers = localStorage.getItem('mentalHealthTestAnswers');
+            if (savedAnswers) {
+                const answers = JSON.parse(savedAnswers);
+                answers.forEach((answer, index) => {
+                    if (index < userAnswers.length) {
+                        userAnswers[index] = answer;
+                    }
+                });
+                updateQuestionNavigation();
+            }
+        }
+
+        // Initialize the quiz when the page loads
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    </script>
+</body>
+
+</html>
