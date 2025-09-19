@@ -10,8 +10,8 @@ import google.generativeai as genai
 import re
 
 app = Flask(__name__)
-app.secret_key = os.getenv("SECRET_KEY", "default_secret")
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+app.secret_key = 'your_secret_key_here'  
+GEMINI_API_KEY = "AIzaSyAwVlnDfc5ja4WozUFhdLILK2ImgAGXlu8"  
 genai.configure(api_key=GEMINI_API_KEY)
 
 gemini_model = genai.GenerativeModel('gemini-1.5-flash')
@@ -250,3 +250,4 @@ def internal_server_error(e):
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
