@@ -36,7 +36,19 @@ feature_columns = [
 ]
 
 
+# Initialize and fit the scaler once at application startup
 scaler = MinMaxScaler()
+
+# Fit the scaler with dummy data during application initialization
+dummy_data = pd.DataFrame({
+    'Nervous_Stressed': [0, 1, 2, 3, 4],
+    'Skip_Meals': [0, 1, 2, 3, 4],
+    'Problem_Sleep_Nights_Numeric': [0.5, 2.5, 4, 6, 6],
+    'Age': [18, 22, 25, 30, 35],
+    'Sleep_Quality': [0, 1, 2, 3, 4]
+})
+scaler.fit(dummy_data)
+print("Scaler fitted successfully")
 
 def preprocess_user_data(user_data):
     try:
@@ -262,7 +274,7 @@ def chatbot_response():
     # Get response from Gemini
     gemini_response = get_gemini_chat_response(user_message, stress_results)
     
-    return jsonify({'response': gemini_response})
+极    return jsonify({'response': gemini_response})
 
 # Error handlers
 @app.errorhandler(404)
@@ -274,14 +286,4 @@ def internal_server_error(e):
     return render_template('500.html'), 500
 
 if __name__ == '__main__':
-    
-    dummy_data = pd.DataFrame({
-        'Nervous_Stressed': [0, 1, 2, 3, 4],
-        'Skip_Meals': [0, 1, 2, 3, 4],
-        'Problem_Sleep_Nights_Numeric': [0.5, 2.5, 4, 6, 6],
-        'Age': [18, 22, 25, 30, 35],
-        'Sleep_Quality': [0, 1, 2, 3, 4]
-    })
-    scaler.fit(dummy_data)
-
     app.run(debug=True, host='0.0.0.0', port=5000)
